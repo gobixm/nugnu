@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Analyze .csproj and registry to build third-party dependencies report",
   "bin": {
-    "tp-report": "./bin/nugnu.js"
+    "nugnu": "./bin/nugnu.js"
   },
   "scripts": {
     "start": "node ./bin/nugnu.js"
