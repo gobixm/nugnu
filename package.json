@@ -1,0 +1,24 @@
+{
+  "name": "nugnu",
+  "version": "1.0.0",
+  "description": "Analyze .csproj and registry to build third-party dependencies report",
+  "bin": {
+    "tp-report": "./bin/nugnu.js"
+  },
+  "scripts": {
+    "start": "node ./bin/nugnu.js"
+  },
+  "preferGlobal": true,
+  "author": "Kirill Ivanov",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "glob": "^7.1.3",
+    "json2csv": "^4.2.1",
+    "node-glob": "^1.2.0",
+    "rc": "^1.2.8",
+    "xml2js": "^0.4.19",
+    "xmldom": "^0.1.27",
+    "xpath": "0.0.27"
+  }
+}
