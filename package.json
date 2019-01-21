@@ -1,6 +1,6 @@
 {
   "name": "nugnu",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Analyze .csproj and registry to build third-party dependencies report",
   "bin": {
     "nugnu": "./bin/nugnu.js"
@@ -9,7 +9,7 @@
     "start": "node ./bin/nugnu.js"
   },
   "preferGlobal": true,
-  "author": "Kirill Ivanov",
+  "author": "Kirill Ivanov, Pykhtin Pavel",
   "license": "ISC",
   "dependencies": {
     "glob": "^7.1.3",
