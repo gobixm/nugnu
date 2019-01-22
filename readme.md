@@ -1,4 +1,5 @@
 # Install
+Node.js version >= 10.15 is required.
 
 Install as global package
 ```
