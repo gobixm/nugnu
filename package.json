@@ -1,6 +1,6 @@
 {
   "name": "nugnu",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Analyze .csproj and registry to build third-party dependencies report",
   "bin": {
     "nugnu": "./bin/nugnu.js"
