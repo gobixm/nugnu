@@ -1,6 +1,14 @@
 #!/usr/bin/env node
-const lib = require('../lib/index.js');
+
+import {
+    run
+} from '../dist/nugnu.js';
+
 
 (async () => {
-    await lib.run();
+    try {
+        await run();
+    } catch (e) {
+        console.error('unhandled exception', e);
+    }
 })();
