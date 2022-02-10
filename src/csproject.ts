@@ -1,7 +1,7 @@
 import { promises as fsPromises } from 'fs';
 import globPkg from 'glob';
 import { select } from 'xpath';
-import { DOMParser } from 'xmldom';
+import { DOMParser } from '@xmldom/xmldom';
 
 const dom = new DOMParser();
 const { glob } = globPkg;

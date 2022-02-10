@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import httpProxyAgent from 'https-proxy-agent';
 import { CsProjPackageInfo } from './csproject';
 const { HttpsProxyAgent } = httpProxyAgent;
-const proxyAgent = new HttpsProxyAgent(process.env.http_proxy);
+const proxyAgent = process.env.http_proxy ? new HttpsProxyAgent(process.env.http_proxy) : undefined;
 
 export interface NugetPackageInfo extends CsProjPackageInfo {
     latest: string;
