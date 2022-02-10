@@ -1,9 +1,13 @@
-const axios = require('axios');
-const fetch = require('node-fetch');
-const htmlEncode = require('js-htmlencode').htmlEncode;
-const Https = require('https');
+import fetch from 'node-fetch';
+import { Agent } from 'https';
+import htmlencode from 'js-htmlencode';
 
-async function report(infoes, config) {
+import { NugetPackageInfo } from './crawler';
+
+const { htmlEncode } = htmlencode;
+const httpsAgent = new Agent({ rejectUnauthorized: false });
+
+export async function reportConfluence(infoes: NugetPackageInfo[], config) {
     const columnMapping = {
         name: 'Name',
         version: 'Version',
@@ -24,49 +28,49 @@ async function report(infoes, config) {
         await updatePage(page, pageContent);
     }
 
-    function buildHeader() {
+    function buildHeader(): string {
         const columns = [];
-        for (let prop in columnMapping) {
+        for (const prop in columnMapping) {
             columns.push(`<th>${columnMapping[prop]}</th>`);
         }
 
         return `<tr>${columns.join('')}</tr>`;
     }
 
-    function buildBody() {
+    function buildBody(): string {
         return infoes
             .map(buildRow)
             .join('');
     }
 
-    function buildRow(package) {
+    function buildRow(nugetPackage: NugetPackageInfo): string {
         const columns = [];
 
-        columns.push(buildTextCell(package.name));
-        columns.push(buildTextCell(package.version));
-        columns.push(buildTextCell(package.latest));
-        columns.push(buildTextCell(package.description));
-        columns.push(buildLinkCell('link', package.repository));
-        columns.push(buildLinkCell('link', package.license));
-        columns.push(buildLinkCell('link', package.homepage));
+        columns.push(buildTextCell(nugetPackage.name));
+        columns.push(buildTextCell(nugetPackage.version));
+        columns.push(buildTextCell(nugetPackage.latest));
+        columns.push(buildTextCell(nugetPackage.description));
+        columns.push(buildLinkCell('link', nugetPackage.repository));
+        columns.push(buildLinkCell('link', nugetPackage.license));
+        columns.push(buildLinkCell('link', nugetPackage.homepage));
 
         return `<tr>${columns.join('')}</tr>`
     }
 
-    function buildTextCell(text) {
+    function buildTextCell(text: string): string {
         return `<td>${htmlEncode(text || '')}</td>`;
     }
 
-    function buildLinkCell(text, url) {
+    function buildLinkCell(text: string, url: string): string {
         return `<td><a href="${url || ''}">${htmlEncode(text || '')}</a></td>`
     }
 
-    async function getPage() {
+    async function getPage(): Promise<unknown> {
         const url = `${config.server}/rest/api/content/${config.page}`;
         console.log('Quering page state...');
         const response = await fetch(url, {
             method: 'GET',
-            agent: new Https.Agent({ rejectUnauthorized: false }),
+            agent: httpsAgent,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Basic ${config.credentials}`
@@ -99,7 +103,7 @@ async function report(infoes, config) {
         console.log('Updating page...');
         const response = await fetch(url, {
             method: 'PUT',
-            agent: new Https.Agent({ rejectUnauthorized: false }),
+            agent: httpsAgent,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Basic ${config.credentials}`
@@ -109,5 +113,3 @@ async function report(infoes, config) {
         console.log(`Update finished with staus code ${response.status}`);
     }
 }
-
-module.exports.report = report;
