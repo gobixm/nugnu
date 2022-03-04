@@ -1,6 +1,6 @@
 {
   "name": "nugnu",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Analyze .csproj and registry to build third-party dependencies report",
   "type": "module",
   "bin": {
@@ -8,9 +8,9 @@
   },
   "main": "dist/nugnu.ts",
   "scripts": {
-    "start": "tsc && node dist/nugnu.js",
+    "start": "tsc && node bin/nugnu.js",
     "build": "tsc",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint ./src --ext .ts"
   },
   "preferGlobal": true,
   "author": "Kirill Ivanov, Pykhtin Pavel",

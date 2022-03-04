@@ -11,8 +11,6 @@ const config = rc('tp-report', {
 });
 
 export async function run() {
-    console.log(JSON.stringify(config));
-
     const packages = await readProjects(config.path);
     const infoes = await getPackagesInfo(packages);
 
