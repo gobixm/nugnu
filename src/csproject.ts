@@ -15,13 +15,14 @@ export interface CsProjPackageInfo {
 export async function readProjects(path: string): Promise<CsProjPackageInfo[]> {
     console.log(path)
     const projects = findCsproj(path);
+    const packagesProps = await getPackagesProps(path)
 
     const packageMap = new Map<string, CsProjPackageInfo>();
 
     for (const projPath of projects) {
         console.log(`found ${projPath}`);
         const proj = await parse(projPath)
-        mapProject(proj).forEach(p => packageMap.set(p.id, p));
+        mapProject(proj, packagesProps).forEach(p => packageMap.set(p.id, p));
     }
 
     return Array.from(packageMap.values());
@@ -31,34 +32,43 @@ function findCsproj(path: string): string[] {
     return glob.sync(`${path}/**/*.csproj`);
 }
 
+async function getPackagesProps(path: string): Promise<Document> {
+    const packagesPropsPath = glob.sync(`${path}/**/Directory.Packages.props`);
+    
+    if (packagesPropsPath?.length > 0){
+        console.log(`found props ${packagesPropsPath[0]}`);
+        return await parse(packagesPropsPath[0]);
+    }
+}
+
 async function parse(path: string): Promise<Document> {
     const content = await fsPromises.readFile(path, 'utf8');
     return dom.parseFromString(content)
 }
 
 function getAttribute(ref: Element, name: string): string | undefined {
-    const attribute = ref.getAttribute(name);
+    const attribute = ref?.getAttribute(name);
 
     if (attribute) {
         return attribute;
     }
 
-    const attributeElement = ref.getElementsByTagName(name);
+    const attributeElement = ref?.getElementsByTagName(name);
     if (attributeElement?.length > 0) {
         return attributeElement[0].textContent;
     }
 
 }
 
-function mapProject(proj: Node): CsProjPackageInfo[] {
+function mapProject(proj: Node, packagesProps: Node): CsProjPackageInfo[] {
     const packagesRef = select("//PackageReference", proj);
     const result: CsProjPackageInfo[] = [];
     if (packagesRef.length) {
         for (const ref of packagesRef) {
             const el = ref as Element;
             const name = getAttribute(el, 'Include');
-            let version = getAttribute(el, 'Version');
-            const privateAssets = getAttribute(el, 'PrivateAssets');
+            let version = getAttribute(el, 'Version') ?? getAttribute(getPackageVersionElement(name, packagesProps), 'Version');
+            const privateAssets = getAttribute(el, 'PrivateAssets') ?? getAttribute(getPackageVersionElement(name, packagesProps), 'PrivateAssets');
 
             if (!version) {
                 continue;
@@ -81,4 +91,15 @@ function mapProject(proj: Node): CsProjPackageInfo[] {
         }
     }
     return result;
+}
+
+function getPackageVersionElement(name: string, packagesProps: Node): Element | undefined {
+    if (!packagesProps){
+        return;
+    }
+
+    const packageVersionRef = select(`//PackageVersion[@Include='${name}']`, packagesProps);
+    if (packageVersionRef?.length > 0) {
+        return packageVersionRef[0] as Element;
+    }
 }
